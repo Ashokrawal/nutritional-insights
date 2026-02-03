@@ -18,7 +18,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
-  "https://nutritional-insights-server-one.vercel.app/", // change later
+  // change later
 ];
 
 app.use(

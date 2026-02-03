@@ -5,8 +5,8 @@ const savedGoal = localStorage.getItem("dailyKalsGoal");
 const savedConsumed = localStorage.getItem("consumedKals");
 
 const initialState = {
-  dailyGoal: savedGoal ? parseInt(savedGoal) : 2000,
-  consumedToday: savedConsumed ? parseInt(savedConsumed) : 0,
+  dailyGoal: Number(localStorage.getItem("dailyKalsGoal")) || 2000,
+  consumedToday: Number(localStorage.getItem("consumedKals")) || 0,
 };
 
 const nutritionSlice = createSlice({
