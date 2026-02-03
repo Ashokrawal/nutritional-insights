@@ -95,6 +95,7 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
       // Save Scan History
       .addCase(saveScanHistory.fulfilled, (state) => {
         // Optionally handle success
