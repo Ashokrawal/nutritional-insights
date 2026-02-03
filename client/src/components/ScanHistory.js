@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchScanHistory, deleteScanHistory, fetchProduct } from '../redux/productSlice';
-import { FiTrash2, FiClock, FiPackage } from 'react-icons/fi';
-import { motion } from 'framer-motion';
-import './ScanHistory.css';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchScanHistory,
+  deleteScanHistory,
+  fetchProduct,
+} from "../redux/productSlice";
+import { FiTrash2, FiClock, FiPackage } from "react-icons/fi";
+import { motion } from "framer-motion";
+import "./ScanHistory.css";
 
 const ScanHistory = () => {
   const dispatch = useDispatch();
@@ -14,22 +18,22 @@ const ScanHistory = () => {
   }, [dispatch]);
 
   const handleDelete = (id) => {
-    if (window.confirm('Delete this scan from history?')) {
+    if (window.confirm("Delete this scan from history?")) {
       dispatch(deleteScanHistory(id));
     }
   };
 
   const handleViewProduct = (barcode) => {
     dispatch(fetchProduct(barcode));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const getHealthColor = (score) => {
-    if (score >= 75) return '#00d084';
-    if (score >= 60) return '#4ade80';
-    if (score >= 45) return '#fbbf24';
-    if (score >= 30) return '#fb923c';
-    return '#ef4444';
+    if (score >= 75) return "#00d084";
+    if (score >= 60) return "#4ade80";
+    if (score >= 45) return "#fbbf24";
+    if (score >= 30) return "#fb923c";
+    return "#ef4444";
   };
 
   const formatDate = (date) => {
@@ -40,12 +44,12 @@ const ScanHistory = () => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Just now';
+    if (diffMins < 1) return "Just now";
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-    
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
   if (historyLoading) {
@@ -101,23 +105,25 @@ const ScanHistory = () => {
                 {scan.brands && (
                   <p className="history-item-brand">{scan.brands}</p>
                 )}
-                <p className="history-item-time">{formatDate(scan.scannedAt)}</p>
+                <p className="history-item-time">
+                  {formatDate(scan.scannedAt)}
+                </p>
               </div>
 
               <div className="history-item-score">
-                <div 
+                <div
                   className="score-badge"
-                  style={{ 
+                  style={{
                     backgroundColor: `${getHealthColor(scan.healthScore)}20`,
                     borderColor: getHealthColor(scan.healthScore),
-                    color: getHealthColor(scan.healthScore)
+                    color: getHealthColor(scan.healthScore),
                   }}
                 >
                   {scan.healthScore}
                 </div>
-                {scan.nutriScore && scan.nutriScore !== 'N/A' && (
+                {/* {scan.nutriScore && scan.nutriScore !== 'N/A' && (
                   <div className="nutri-mini">{scan.nutriScore}</div>
-                )}
+                )} */}
               </div>
             </div>
 
