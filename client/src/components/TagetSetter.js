@@ -10,7 +10,7 @@ const TargetSetter = () => {
 
   const handleChange = (e) => {
     const value = e.target.value;
-    // Allow empty string while typing, but default to 0 for the store
+
     dispatch(setDailyGoal(value === "" ? 0 : parseInt(value)));
   };
 
