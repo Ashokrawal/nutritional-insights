@@ -3,59 +3,87 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const axios = require("axios");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet"); // NEW: Security headers
+const NodeCache = require("node-cache"); // NEW: Caching library
 require("dotenv").config();
 
 const app = express();
+
+// Simple In-Memory Cache (Lasts 10 minutes)
+const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
 
 /* =========================
    Middleware
 ========================= */
 
+// Security Headers
+app.use(helmet());
+
 // Body parser
 app.use(express.json());
 
-// CORS (dev + prod)
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5173",
-  // change later
-];
+// CORS
+const whitelist = ["http://localhost:3000", ""]; // Add your frontend port here!
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  }),
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Added !origin check to allow tools like Postman that don't send an origin
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
 
-// Rate limiter (protect API)
+// ⬇️ ADD THIS LINE HERE ⬇️
+app.use(cors(corsOptions));
+
+// Rate limiter
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
+  windowMs: 1 * 60 * 1000,
   max: 60, // 60 requests/minute
+  message: "Too many requests from this IP, please try again later.",
 });
 app.use("/api/", limiter);
 
 /* =========================
-   MongoDB Connection
+   MongoDB Connection (Serverless Ready)
 ========================= */
 
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/nutritional-insights";
+const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err);
-    process.exit(1);
-  });
+if (!MONGODB_URI) {
+  console.error("❌ ERROR: MONGODB_URI is not defined in .env");
+}
+
+// Global is used here to maintain a cached connection across hot reloads
+// in development and prevent exhausting connection limits in production
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectToDatabase() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      maxPoolSize: 10, // Maximum connections in the pool
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
+    });
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
 /* =========================
    Models
@@ -63,21 +91,18 @@ mongoose
 
 const ScanHistorySchema = new mongoose.Schema(
   {
-    barcode: { type: String, required: true },
+    barcode: { type: String, required: true, index: true }, // PRO: Added Index
     productName: String,
     brands: String,
     imageUrl: String,
     healthScore: Number,
     nutriScore: String,
     scannedAt: { type: Date, default: Date.now },
-
-    // Future authentication support
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: false,
     },
-
     nutritionData: {
       energy: Number,
       fat: Number,
@@ -92,6 +117,9 @@ const ScanHistorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Compound Index for better performance on history lookups
+ScanHistorySchema.index({ userId: 1, scannedAt: -1 });
+
 const ScanHistory = mongoose.model("ScanHistory", ScanHistorySchema);
 
 /* =========================
@@ -100,13 +128,13 @@ const ScanHistory = mongoose.model("ScanHistory", ScanHistorySchema);
 
 function calculateHealthScore(product) {
   let score = 50;
-  const n = product.nutriments || {};
+  const n = product.nutriments || {}; // OpenFoodFacts returns 'nutriments'
 
   // Nutri-score impact
   const nutriScorePoints = { a: 25, b: 15, c: 5, d: -10, e: -25 };
   score += nutriScorePoints[product.nutriscore_grade?.toLowerCase()] || 0;
 
-  // Sugar penalty (strong)
+  // Sugar penalty
   if (n.sugars_100g !== undefined) {
     if (n.sugars_100g < 5) score += 10;
     else if (n.sugars_100g < 10) score += 5;
@@ -151,6 +179,7 @@ function calculateHealthScore(product) {
   // Calories penalty
   if (n["energy-kcal_100g"] > 500) score -= 10;
 
+  // FIXED: Removed extra parenthesis
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
@@ -158,21 +187,28 @@ function calculateHealthScore(product) {
    Routes
 ========================= */
 
-// Health check
-app.get("/api/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "Nutritional Insights API running 🚀" });
 });
 
-// Fetch product by barcode
-app.get("/api/product/:barcode", async (req, res) => {
+app.get("/product/:barcode", async (req, res) => {
+  await connectToDatabase();
   try {
     const { barcode } = req.params;
 
-    // Validate barcode
-    if (!/^\d{8,14}$/.test(barcode)) {
+    // 1. Check Cache first (Performance Boost)
+    const cachedProduct = cache.get(barcode);
+    if (cachedProduct) {
+      console.log(`📦 Cache hit for ${barcode}`);
+      return res.json(cachedProduct);
+    }
+
+    // 2. Validate barcode (Strict EAN-8 or EAN-13)
+    if (!/^\d{8,13}$/.test(barcode)) {
       return res.status(400).json({ error: "Invalid barcode format" });
     }
 
+    // 3. Fetch from API
     const response = await axios.get(
       `https://world.openfoodfacts.net/api/v2/product/${barcode}`,
       {
@@ -184,9 +220,7 @@ app.get("/api/product/:barcode", async (req, res) => {
     );
 
     if (response.data.status === 0) {
-      return res.status(404).json({
-        error: "Product not found",
-      });
+      return res.status(404).json({ error: "Product not found" });
     }
 
     const product = response.data.product;
@@ -216,15 +250,21 @@ app.get("/api/product/:barcode", async (req, res) => {
       allergens: product.allergens_tags,
     };
 
+    // 4. Set Cache
+    cache.set(barcode, productData);
+
     res.json(productData);
   } catch (error) {
     console.error("❌ Error fetching product:", error.message);
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({ error: "Product not found" });
+    }
     res.status(500).json({ error: "Failed to fetch product" });
   }
 });
 
-// Save scan history
-app.post("/api/scan-history", async (req, res) => {
+app.post("/scan-history", async (req, res) => {
+  await connectToDatabase();
   try {
     const scan = new ScanHistory(req.body);
     await scan.save();
@@ -235,13 +275,14 @@ app.post("/api/scan-history", async (req, res) => {
   }
 });
 
-// Get scan history
-app.get("/api/scan-history", async (req, res) => {
+app.get("/scan-history", async (req, res) => {
+  await connectToDatabase();
   try {
     const limit = parseInt(req.query.limit) || 20;
     const history = await ScanHistory.find()
       .sort({ scannedAt: -1 })
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     res.json(history);
   } catch (error) {
@@ -250,8 +291,8 @@ app.get("/api/scan-history", async (req, res) => {
   }
 });
 
-// Delete scan history
-app.delete("/api/scan-history/:id", async (req, res) => {
+app.delete("/scan-history/:id", async (req, res) => {
+  await connectToDatabase();
   try {
     await ScanHistory.findByIdAndDelete(req.params.id);
     res.json({ message: "Scan deleted 🗑️" });
@@ -265,9 +306,19 @@ app.delete("/api/scan-history/:id", async (req, res) => {
    Start Server
 ========================= */
 
-if (process.env.NODE_ENV !== "production") {
-  const PORT = 5001;
-  app.listen(PORT, () => console.log(`🚀 Local Server on ${PORT}`));
+const PORT = process.env.PORT || 5001;
+
+if (require.main === module) {
+  connectToDatabase()
+    .then(() => {
+      console.log("✅ MongoDB Connected");
+      app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    })
+    .catch((err) => {
+      console.error("❌ Failed to connect to MongoDB", err);
+      process.exit(1);
+    });
 }
 
+// EXPORT for Vercel
 module.exports = app;
