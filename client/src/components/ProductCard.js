@@ -9,11 +9,8 @@ import {
   FiAlertCircle,
 } from "react-icons/fi";
 import "./ProductCard.css";
-import { useSelector } from "react-redux";
 
 const ProductCard = ({ product }) => {
-  const dailyGoal = useSelector((state) => state?.nutrition?.dailyGoal) || 2000;
-
   if (!product) return null;
 
   // 1. Calculate the Multiplier based on quantity (e.g., "500 g")
@@ -33,16 +30,6 @@ const ProductCard = ({ product }) => {
   };
 
   const multiplier = getMultiplier();
-  const hasTotalData = multiplier !== 1;
-
-  // FIXED: Use Math.ceil for whole numbers only
-  const totalKals = Math.ceil(
-    (product.nutritionData?.energy || 0) * multiplier,
-  );
-
-  // Daily Goal Logic
-  const kalsRemaining = Math.max(0, dailyGoal - totalKals);
-  const percentageOfGoal = (totalKals / dailyGoal) * 100;
 
   const getHealthGrade = (score) => {
     if (score >= 75)
@@ -54,17 +41,6 @@ const ProductCard = ({ product }) => {
     if (score >= 30)
       return { label: "Poor", color: "#fb923c", icon: FiAlertCircle };
     return { label: "Very Poor", color: "#ef4444", icon: FiXCircle };
-  };
-
-  const getNutriScoreColor = (score) => {
-    const colors = {
-      A: "#00d084",
-      B: "#85cc00",
-      C: "#fbbf24",
-      D: "#fb923c",
-      E: "#ef4444",
-    };
-    return colors[score] || "#6b7280";
   };
 
   const grade = getHealthGrade(product.healthScore);
