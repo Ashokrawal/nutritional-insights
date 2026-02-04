@@ -1,9 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Get initial data from localStorage if it exists
-const savedGoal = localStorage.getItem("dailyKalsGoal");
-const savedConsumed = localStorage.getItem("consumedKals");
-
 const initialState = {
   dailyGoal: Number(localStorage.getItem("dailyKalsGoal")) || 2000,
   consumedToday: Number(localStorage.getItem("consumedKals")) || 0,

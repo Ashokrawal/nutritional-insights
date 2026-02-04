@@ -7,17 +7,12 @@ import {
   FiPackage,
   FiActivity,
   FiAlertCircle,
-  FiZap,
 } from "react-icons/fi";
 import "./ProductCard.css";
 import { useSelector } from "react-redux";
-import TargetSetter from "./TagetSetter";
-
-import { useState } from "react";
 
 const ProductCard = ({ product }) => {
   const dailyGoal = useSelector((state) => state?.nutrition?.dailyGoal) || 2000;
-  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   if (!product) return null;
 

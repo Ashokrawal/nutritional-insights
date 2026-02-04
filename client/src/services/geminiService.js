@@ -284,8 +284,11 @@ Provide detailed comparison in JSON format:
   }
 };
 
-export default {
+const geminiService = {
   analyzeProductIngredients,
   getQuickHealthVerdict,
   compareProducts,
 };
+
+// Then export it as the default
+export default geminiService;
