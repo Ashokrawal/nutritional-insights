@@ -22,7 +22,10 @@ app.use(express.json());
 
 // CORS
 // ADD YOUR DEPLOYED FRONTEND URL HERE (e.g., "https://your-app.vercel.app")
-const whitelist = ["http://localhost:3000", ""];
+const whitelist = [
+  "http://localhost:3000",
+  "https://nutritional-insights-f3wh.vercel.app/",
+];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || whitelist.indexOf(origin) !== -1) {
