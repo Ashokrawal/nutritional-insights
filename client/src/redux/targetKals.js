@@ -5,6 +5,8 @@ const initialState = {
   consumedToday: Number(localStorage.getItem("consumedKals")) || 0,
 };
 
+// asdfas
+
 const nutritionSlice = createSlice({
   name: "nutrition",
   initialState,
