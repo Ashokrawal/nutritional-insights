@@ -265,8 +265,9 @@ app.delete("/api/scan-history/:id", async (req, res) => {
    Start Server
 ========================= */
 
-const PORT = 5001;
+if (process.env.NODE_ENV !== "production") {
+  const PORT = 5001;
+  app.listen(PORT, () => console.log(`🚀 Local Server on ${PORT}`));
+}
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+module.exports = app;

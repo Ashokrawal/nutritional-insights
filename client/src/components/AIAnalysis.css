@@ -297,10 +297,11 @@
 /* Bottom Line Section */
 .bottomline-section {
   margin-bottom: 32px;
+  color: wheat;
 }
 
 .bottomline-card {
-  background: linear-gradient(135deg, #10b981 90%, #059669 100%);
+  background: linear-gradient(135deg, #32d29d 10%, #568ab2 100%);
   padding: 24px 28px;
   border-radius: 16px;
   color: white;
@@ -324,6 +325,7 @@
   line-height: 1.8;
   margin: 0;
   font-weight: 500;
+  color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -429,12 +431,12 @@
 }
 
 .alternative {
-  color: #059669;
+  color: #1b583e;
   font-size: 0.9375rem;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 2px solid #d1fae5;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.6;
 }
 
@@ -449,13 +451,13 @@
   padding: 24px;
   border-radius: 14px;
   border-left: 5px solid;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 1 12px 12px rgba(11, 9, 9, 0.08);
   transition: all 0.3s ease;
 }
 
 .personal-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(33, 33, 33, 0.12);
 }
 
 .personal-card h4 {
@@ -479,31 +481,37 @@
 .personal-card.diabetic {
   border-left-color: #dc2626;
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  box-shadow: 0 8px 24px rgba(114, 75, 75, 0.12);
 }
 
 .personal-card.weightloss {
   border-left-color: #ea580c;
   background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  box-shadow: 0 8px 24px rgba(114, 75, 75, 0.12);
 }
 
 .personal-card.bulking {
   border-left-color: #16a34a;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  box-shadow: 0 8px 24px rgba(114, 75, 75, 0.12);
 }
 
 .personal-card.heart {
   border-left-color: #ec4899;
   background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+  box-shadow: 0 8px 24px rgba(114, 75, 75, 0.12);
 }
 
 .personal-card.kids {
   border-left-color: #7c3aed;
   background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  box-shadow: 0 8px 24px rgba(114, 75, 75, 0.12);
 }
 
 .personal-card.pregnancy {
-  border-left-color: #ec4899;
+  border-left-color: #ad085b;
   background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+  box-shadow: 0 8px 24px rgba(114, 75, 75, 0.12);
 }
 
 .personal-card.seniors {

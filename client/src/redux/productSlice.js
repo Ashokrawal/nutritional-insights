@@ -2,7 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const getBaseUrl = () => {
-  const envUrl = process.env.REACT_APP_API_URL || "http://localhost:5001";
+  // Try Vite env, then CRA env, then default to current host
+  const envUrl =
+    import.meta.env?.VITE_API_URL ||
+    process.env?.REACT_APP_API_URL ||
+    "http://localhost:5001";
   return `${envUrl.replace(/\/$/, "")}/api`;
 };
 
