@@ -7,7 +7,9 @@ const getBaseUrl = () => {
     import.meta.env?.VITE_API_URL ||
     process.env?.REACT_APP_API_URL ||
     "http://localhost:5001";
-  return `${envUrl.replace(/\/$/, "")}/api`;
+
+  // REMOVED the + "/api" because the backend routes are at the root level
+  return envUrl.replace(/\/$/, "");
 };
 
 const API_URL = getBaseUrl();
