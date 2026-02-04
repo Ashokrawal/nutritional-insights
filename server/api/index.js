@@ -20,11 +20,9 @@ const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
 app.use(helmet());
 app.use(express.json());
 
-// CORS
-// ADD YOUR DEPLOYED FRONTEND URL HERE (e.g., "https://your-app.vercel.app")
 const whitelist = [
   "http://localhost:3000",
-  "https://nutritional-insights-f3wh.vercel.app/",
+  "https://nutritional-insights-f3wh.vercel.app",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -528,9 +526,7 @@ Provide detailed comparison in JSON format:
   }
 });
 
-/* =========================
-   Start Server
-========================= */
+// server
 
 const PORT = process.env.PORT || 5001;
 
