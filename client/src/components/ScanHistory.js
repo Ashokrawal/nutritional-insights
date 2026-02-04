@@ -121,9 +121,6 @@ const ScanHistory = () => {
                 >
                   {scan.healthScore}
                 </div>
-                {/* {scan.nutriScore && scan.nutriScore !== 'N/A' && (
-                  <div className="nutri-mini">{scan.nutriScore}</div>
-                )} */}
               </div>
             </div>
 

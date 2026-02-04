@@ -15,13 +15,17 @@
 }
 
 .home::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 400px;
-  background: radial-gradient(ellipse at top, rgba(0, 212, 255, 0.15) 0%, transparent 60%);
+  background: radial-gradient(
+    ellipse at top,
+    rgba(0, 212, 255, 0.15) 0%,
+    transparent 60%
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -30,48 +34,89 @@
   position: relative;
   z-index: 1;
   padding: 3rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Standard horizontal centering for column flex */
+  justify-content: center; /* Vertical centering within the header height */
   text-align: center;
 }
 
 .header-content {
+  width: 100%;
   max-width: 800px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Ensures everything inside is centered */
 }
-
 .header-title {
+  width: 100%;
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the Motion div content */
 }
 
 .logo {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Centers Icon and H1 */
   gap: 1rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Updated H1 to remove any browser-default alignment bias */
+.logo h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  text-align: center;
+  background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure tagline occupies its own centered block */
+.tagline {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
 }
 
 .logo-icon {
   width: 72px;
   height: 72px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.4),
-              0 0 0 1px rgba(0, 212, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 212, 255, 0.4),
+    0 0 0 1px rgba(0, 212, 255, 0.2);
   animation: iconPulse 3s ease-in-out infinite;
 }
 
 @keyframes iconPulse {
-  0%, 100% {
-    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.4),
-                0 0 0 1px rgba(0, 212, 255, 0.2);
+  0%,
+  100% {
+    box-shadow:
+      0 8px 32px rgba(0, 212, 255, 0.4),
+      0 0 0 1px rgba(0, 212, 255, 0.2);
   }
   50% {
-    box-shadow: 0 8px 40px rgba(0, 212, 255, 0.6),
-                0 0 0 1px rgba(0, 212, 255, 0.4);
+    box-shadow:
+      0 8px 40px rgba(0, 212, 255, 0.6),
+      0 0 0 1px rgba(0, 212, 255, 0.4);
   }
 }
 
@@ -87,7 +132,8 @@
 }
 
 @keyframes scanLine {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(-12px);
     opacity: 0.3;
   }
@@ -97,22 +143,24 @@
   }
 }
 
+/* Ensure the text doesn't break nicely */
 .logo h1 {
   font-size: 2.5rem;
   font-weight: 900;
-  margin: 0;
+  text-align: center;
   background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.04em;
+  margin: 0;
 }
 
 .tagline {
-  font-size: 1.125rem;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1.1rem;
   color: var(--text-secondary);
-  margin: 0;
-  font-weight: 500;
+  margin-top: 0.5rem;
 }
 
 .main-content {
@@ -125,7 +173,11 @@
 .error-banner {
   max-width: 600px;
   margin: 0 auto 2rem;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.15) 0%,
+    rgba(239, 68, 68, 0.1) 100%
+  );
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 16px;
   padding: 1rem 1.5rem;
@@ -185,19 +237,25 @@
   width: 100%;
   padding: 0;
   border: none;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
   border-radius: 20px;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.4),
-              0 0 0 1px rgba(0, 212, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 212, 255, 0.4),
+    0 0 0 1px rgba(0, 212, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scan-button:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 48px rgba(0, 212, 255, 0.5),
-              0 0 0 1px rgba(0, 212, 255, 0.3);
+  box-shadow:
+    0 12px 48px rgba(0, 212, 255, 0.5),
+    0 0 0 1px rgba(0, 212, 255, 0.3);
 }
 
 .scan-button:active {
@@ -231,12 +289,17 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 70%
+  );
   animation: glowPulse 3s ease-in-out infinite;
 }
 
 @keyframes glowPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
@@ -298,7 +361,11 @@
 }
 
 .action-button.primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
   color: #fff;
   box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
 }
@@ -368,5 +435,28 @@
 
   .action-button {
     width: 100%;
+  }
+}
+
+.ai-button {
+  background: linear-gradient(
+    135deg,
+    #8b5cf6 0%,
+    #6366f1 100%
+  ); /* Purple/Indigo for AI */
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  border: none;
+}
+
+.ai-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+@media (max-width: 640px) {
+  .product-actions {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }

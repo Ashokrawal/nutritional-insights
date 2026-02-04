@@ -1,8 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+const getBaseUrl = () => {
+  const envUrl = process.env.REACT_APP_API_URL || "http://localhost:5001";
+  return `${envUrl.replace(/\/$/, "")}/api`;
+};
 
+const API_URL = getBaseUrl();
 // Async thunks
 export const fetchProduct = createAsyncThunk(
   "product/fetchProduct",

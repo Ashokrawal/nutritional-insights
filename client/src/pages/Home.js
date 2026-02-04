@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { clearProduct, clearError } from '../redux/productSlice';
-import BarcodeScanner from '../components/BarcodeScanner';
-import ProductCard from '../components/ProductCard';
-import ScanHistory from '../components/ScanHistory';
-import { FiCamera, FiX, FiAlertCircle } from 'react-icons/fi';
-import { motion, AnimatePresence } from 'framer-motion';
-import './Home.css';
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { clearProduct, clearError } from "../redux/productSlice";
+import BarcodeScanner from "../components/BarcodeScanner";
+import ProductCard from "../components/ProductCard";
+import ScanHistory from "../components/ScanHistory";
+import AIAnalysis from "../components/AIAnalysis"; // IMPORT THIS!
+import { FiCamera, FiX, FiAlertCircle } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { MdOutlineScience } from "react-icons/md";
+import "./Home.css";
 
 const Home = () => {
   const [showScanner, setShowScanner] = useState(false);
-  const { currentProduct, loading, error } = useSelector((state) => state.product);
+  // State for the AI Modal
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
+
+  const { currentProduct, loading, error } = useSelector(
+    (state) => state.product,
+  );
   const dispatch = useDispatch();
 
   const handleCloseError = () => {
@@ -21,12 +28,16 @@ const Home = () => {
     dispatch(clearProduct());
   };
 
+  // Check if current product has ingredients for AI analysis
+  // We check if ingredients is a non-empty string or array
+  const canAnalyze =
+    currentProduct?.ingredients && currentProduct.ingredients.length;
+
   return (
     <div className="home">
-      {/* Header */}
       <header className="app-header">
         <div className="header-content">
-          <motion.div 
+          <motion.div
             className="header-title"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -38,12 +49,13 @@ const Home = () => {
               </div>
               <h1>NutriScan</h1>
             </div>
-            <p className="tagline">Instant nutrition insights at your fingertips</p>
+            <p className="tagline">
+              Instant nutrition insights at your fingertips
+            </p>
           </motion.div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="main-content">
         {/* Error Message */}
         <AnimatePresence>
@@ -56,7 +68,7 @@ const Home = () => {
             >
               <div className="error-content">
                 <FiAlertCircle />
-                <p>{error.message || error.error || 'An error occurred'}</p>
+                <p>{error.message || error.error || "An error occurred"}</p>
               </div>
               <button onClick={handleCloseError} className="error-close">
                 <FiX />
@@ -65,7 +77,7 @@ const Home = () => {
           )}
         </AnimatePresence>
 
-        {/* Scan Button */}
+        {/* Scan Button (Show only when no product is loaded) */}
         {!currentProduct && !loading && (
           <motion.div
             className="scan-section"
@@ -73,7 +85,7 @@ const Home = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <button 
+            <button
               className="scan-button"
               onClick={() => setShowScanner(true)}
             >
@@ -83,7 +95,9 @@ const Home = () => {
               </div>
               <div className="scan-button-glow"></div>
             </button>
-            <p className="scan-hint">Tap to scan a product barcode and get instant health insights</p>
+            <p className="scan-hint">
+              Tap to scan a product barcode and get instant health insights
+            </p>
           </motion.div>
         )}
 
@@ -99,7 +113,7 @@ const Home = () => {
           </motion.div>
         )}
 
-        {/* Product Card */}
+        {/* Product Card & Actions (Success State) */}
         <AnimatePresence>
           {currentProduct && !loading && (
             <motion.div
@@ -108,14 +122,32 @@ const Home = () => {
               exit={{ opacity: 0 }}
             >
               <div className="product-actions">
-                <button 
+                <button
                   className="action-button primary"
                   onClick={() => setShowScanner(true)}
                 >
                   <FiCamera />
                   Scan Another
                 </button>
-                <button 
+
+                {/* --- AI BUTTON MOVED HERE --- */}
+                {canAnalyze && (
+                  <button
+                    className="action-button ai-button"
+                    onClick={() => setShowAIAnalysis(true)}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)",
+                      color: "white",
+                      border: "none",
+                    }}
+                  >
+                    <MdOutlineScience size={20} />
+                    AI Analysis
+                  </button>
+                )}
+
+                <button
                   className="action-button secondary"
                   onClick={handleClearProduct}
                 >
@@ -123,6 +155,7 @@ const Home = () => {
                   Clear
                 </button>
               </div>
+
               <ProductCard product={currentProduct} />
             </motion.div>
           )}
@@ -132,14 +165,28 @@ const Home = () => {
         {!currentProduct && !loading && <ScanHistory />}
       </main>
 
-      {/* Footer */}
       <footer className="app-footer">
-        <p>Data powered by <a href="https://world.openfoodfacts.org/" target="_blank" rel="noopener noreferrer">Open Food Facts</a></p>
+        <p>
+          Data powered by{" "}
+          <a
+            href="https://world.openfoodfacts.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open Food Facts
+          </a>
+        </p>
       </footer>
 
-      {/* Barcode Scanner Modal */}
-      {showScanner && (
-        <BarcodeScanner onClose={() => setShowScanner(false)} />
+      {/* --- MODALS --- */}
+      {showScanner && <BarcodeScanner onClose={() => setShowScanner(false)} />}
+
+      {/* AI Analysis Modal - ADDED THIS */}
+      {showAIAnalysis && currentProduct && (
+        <AIAnalysis
+          product={currentProduct}
+          onClose={() => setShowAIAnalysis(false)}
+        />
       )}
     </div>
   );
