@@ -105,7 +105,7 @@ The application will open at `http://localhost:3000`
 
 This application is deployed on Vercel for optimal performance and reliability.
 
-**Live Demo**: [Your Vercel URL]
+**Live Demo**: https://lnkd.in/dKqJeV3G
 
 ### Deploy Your Own
 
@@ -176,7 +176,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Ashok Rawal**
 
 - GitHub: [@Ashokrawal](https://github.com/Ashokrawal)
-- LinkedIn: [Connect with me](https://linkedin.com/in/your-profile)
+- LinkedIn: [Connect with me]((https://www.linkedin.com/in/deepak-ashok-/))
 
 ## 🙏 Acknowledgments
 
